@@ -12,7 +12,7 @@ The site should also keep track of how the kids do in their session and give the
 
 Here is an overview of what I have in mind:
 
-![Rough overview of the app](/app/images/pm_overview.png)
+![Rough overview of the app](https://github.com/pauljacobson/practice-math/blob/master/app/assets/images/pm_overview.png)
 
 I'm aiming for the following functionality:
 
