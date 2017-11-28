@@ -3,7 +3,7 @@ const num1 = document.querySelector('.num1');
 const num2 = document.querySelector('.num2');
 let operator = document.querySelector('.operator');
 const btnNext = document.querySelector('#btn_next');
-const operators = ['+', '-', '*', '/'];
+const operators = ['+', '-', '*'];
 // const solutions = JSON.parse(localStorage.getItem('solutions')) || [];
 
 // 1. Calculate random numbers
