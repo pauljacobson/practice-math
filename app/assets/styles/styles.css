@@ -20,18 +20,26 @@ body {
 }
 
 .container {
-  padding: 20px;
+  margin: 0 auto;
 }
 
 button {
   text-align: center;
-  width: fit-content;
-  height: 80px;
-  background-color: rgb(2, 54, 11);
-  color: #FCFCFC;
+  width: 8rem;
+  height: 2rem;
+  background-color: rgb(241, 241, 241);
+  color: rgb(0, 0, 0);
   font-size: 1.3rem;
-  border: 2px solid #FCFCFC; 
+  border: 2px solid rgb(39, 34, 34); 
   font-family: 'Noto Sans', sans-serif; 
+}
+
+input {
+  height: 2rem;
+  width: 6rem;
+  padding: 5px;
+  font-family: "Inconsolata", monospace;
+  font-size: 1.3rem;
 }
 
 .buttons {
