@@ -8,8 +8,6 @@ const operators = ['+', '-', '*'];
 // 1. Calculate random numbers
 
 function randomNum(min, max) {
-  // min = Math.ceil(min);
-  // max = Math.ceil(max);
   return Math.floor(Math.random() * 1000) + 1;
 }
 
