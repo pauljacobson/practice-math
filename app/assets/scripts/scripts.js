@@ -23,16 +23,6 @@ function calcValues() {
   ${num1} ${randomOperator} ${num2}`;
 }
 
-// num1.textContent = randomNum(10, 999);
-// num2.textContent = randomNum(10, 999);
-// console.log(num1.textContent, num2.textContent);
-// // If num1 is smaller than num2, only select the `+` or `*` operators
-// if (parseInt(num1.textContent) < parseInt(num2.textContent)) {
-//   console.log(`num1: ${num1.textContent}, num2: ${num2.textContent}`);
-// } else {
-//   return;
-// }
-
 calcValues();
 
 // 5. Randomly generate an operator but don't allow operators that lead to negative results
