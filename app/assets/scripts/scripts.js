@@ -12,13 +12,15 @@ function randomNum(min, max) {
 }
 
 // 2. Randomly select an operator
+const randomOperator = operators[Math.floor(Math.random()*operators.length)];
+console.log(randomOperator);
 
 // 4. Populate the fields with randomly generated values
 function calcValues() {
   const num1 = randomNum(10, 999);
   const num2 = randomNum(10, 999);
   eq.textContent = `
-  ${num1} ${operators[Math.floor(Math.random()*operators.length)]} ${num2}`;
+  ${num1} ${randomOperator} ${num2}`;
 }
 
 // num1.textContent = randomNum(10, 999);
