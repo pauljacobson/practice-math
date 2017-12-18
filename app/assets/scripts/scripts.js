@@ -3,6 +3,7 @@ const eq = document.querySelector('.equation');
 let operator;
 const btnNext = document.querySelector('#btn_next');
 const operators = ['+', '-', '*', '/'];
+let solution;
 // const solutions = JSON.parse(localStorage.getItem('solutions')) || [];
 
 // Calculate random numbers
@@ -35,10 +36,12 @@ function renderEquation() {
 
 renderEquation();
 
+// console.log(eval(`${num1} ${randomOperator} ${num2}`));
+
 // Task: Randomly generate an operator but don't allow operators that lead to negative results
 
 // Task: Calculate the value of each randomly generated equation
 
 
 // Generate a new equation when the user clicks on the "Next" button
-btnNext.addEventListener('click', renderEquation);
+// btnNext.addEventListener('click', renderEquation);
