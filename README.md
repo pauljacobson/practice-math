@@ -2,6 +2,8 @@
 
 A site for kids to practice their math.
 
+![Version 1](https://github.com/pauljacobson/practice-math/blob/master/app/assets/images/practice_math_v1.png)
+
 Initially I was going to load a series of equations into the site and randomly present them to users. This would obviously involve a fair amount of work but, you know, it would have been for our children.
 
 It then occurred to me that I could randomly generate values and populate pre-defined fields to create equations. Kids could then type in their answers, and have the system evaluate their answers based on the current values.
