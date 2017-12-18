@@ -5,13 +5,12 @@ const btnNext = document.querySelector('#btn_next');
 const operators = ['+', '-', '*', '/'];
 // const solutions = JSON.parse(localStorage.getItem('solutions')) || [];
 
-// 1. Calculate random numbers
-
+// Calculate random numbers
 function randomNum(min, max) {
   return Math.floor(Math.random() * 1000) + 1;
 }
 
-// 2. Randomly select an operator
+// Randomly select an operator
 function selectOperator() {
   const randomOperator = operators[Math.floor(Math.random()*operators.length)];
   if (randomOperator === '+') {
@@ -25,7 +24,7 @@ function selectOperator() {
   }
 }
 
-// 4. Populate the fields with randomly generated values
+// Populate the fields with randomly generated values
 function renderEquation() {
   selectOperator();
   const num1 = randomNum(10, 999);
@@ -36,11 +35,10 @@ function renderEquation() {
 
 renderEquation();
 
-// 5. Randomly generate an operator but don't allow operators that lead to negative results
-// Function to create operator that we then call in renderEquation() for the operator
+// Task: Randomly generate an operator but don't allow operators that lead to negative results
 
-// 5. Calculate the value of each randomly generated equation
+// Task: Calculate the value of each randomly generated equation
 
 
-// 6. Generate a new equation when the user clicks on the "Next" button
+// Generate a new equation when the user clicks on the "Next" button
 btnNext.addEventListener('click', renderEquation);
