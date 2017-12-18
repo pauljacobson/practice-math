@@ -25,7 +25,6 @@ function selectOperator() {
   }
 }
 
-
 // 4. Populate the fields with randomly generated values
 function renderEquation() {
   selectOperator();
