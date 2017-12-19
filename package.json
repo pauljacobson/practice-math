@@ -1,0 +1,24 @@
+{
+  "name": "practice-math",
+  "version": "1.0.0",
+  "description": "A web app to help kids with their math exercises",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cp -r app/assets/* dist/assets/",
+    "scripts": "npx babel app/assets/scripts/scripts.js --watch --out-file dist/assets/scripts/scripts.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pauljacobson/practice-math.git"
+  },
+  "author": "Paul Jacobson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pauljacobson/practice-math/issues"
+  },
+  "homepage": "https://github.com/pauljacobson/practice-math#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  }
+}
