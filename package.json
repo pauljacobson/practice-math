@@ -5,8 +5,8 @@
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cp -r app/assets/* dist/assets/",
-    "scripts": "npx babel app/assets/scripts/scripts.js --watch --out-file dist/assets/scripts/scripts.js"
+    "start": "cp -r src/* dist/",
+    "scripts": "npx babel src/scripts/scripts.js --watch --out-file dist/scripts/scripts.js"
   },
   "repository": {
     "type": "git",
