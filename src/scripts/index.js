@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const container = (document.querySelector('.container'));
 const eq = document.querySelector('.equation');
 let operator;
