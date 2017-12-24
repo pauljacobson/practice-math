@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import './styles/styles.css';
+import './styles.css';
 
 const container = (document.querySelector('.container'));
 const eq = document.querySelector('.equation');
