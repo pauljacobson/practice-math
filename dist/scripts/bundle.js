@@ -71,8 +71,8 @@
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__styles_css__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__styles_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__styles_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_selectOperator__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modules_selectOperator___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__modules_selectOperator__);
 
 
 
@@ -17272,7 +17272,18 @@ module.exports = function(module) {
 /* 4 */
 /***/ (function(module, exports) {
 
-throw new Error("Module parse failed: Unexpected character '@' (1:0)\nYou may need an appropriate loader to handle this file type.\n| @import url('https://fonts.googleapis.com/css?family=Inconsolata');\n| @import url('https://fonts.googleapis.com/css?family=Noto+Sans');\n| ");
+function selectOperator() {
+  const randomOperator = operators[Math.floor(Math.random()*operators.length)];
+  if (randomOperator === '+') {
+    operator = '\u002B';
+  } else if (randomOperator === '-') {
+    operator = '\u002D';
+  } else if (randomOperator === '*') {
+    operator = '\u00D7';
+  } else if (randomOperator === '/') {
+    operator = '\u00F7';
+  }
+}
 
 /***/ })
 /******/ ]);
