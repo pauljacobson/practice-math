@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cp -r src/* dist/",
-    "scripts": "npx babel src/scripts/scripts.js --watch --out-file dist/scripts/scripts.js"
+    "scripts": "browserify src/scripts/scripts.js --outfile dist/scripts/scripts.js",
+    "styles": "browserify src/styles/styles.css --outfile dist/styles/styles.css"
   },
   "repository": {
     "type": "git",
