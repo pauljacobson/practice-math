@@ -1,4 +1,4 @@
-const container = (document.querySelector('.container'));
+const container = document.querySelector('.container');
 const eq = document.querySelector('.equation');
 let operator;
 const btnNext = document.querySelector('#btn_next');
@@ -12,7 +12,7 @@ function randomNum(min, max) {
 
 // Randomly select an operator
 function selectOperator() {
-  const randomOperator = operators[Math.floor(Math.random()*operators.length)];
+  const randomOperator = operators[Math.floor(Math.random() * operators.length)];
   if (randomOperator === '+') {
     operator = '\u002B';
   } else if (randomOperator === '-') {
