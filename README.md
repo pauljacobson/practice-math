@@ -1,5 +1,7 @@
 # Practice Math
 
+**I've deprecated this version in favour of [the Python Edition, over here](https://github.com/pauljacobson/practice-math-py).**
+
 A site for kids to practice their math.
 
 ![Version 1](https://github.com/pauljacobson/practice-math/blob/master/app/assets/images/practice_math_v1.png)
@@ -29,11 +31,11 @@ I'm aiming for the following functionality:
 
 ## Constraints
 
-There are likely to be a couple of constraints. 
+There are likely to be a couple of constraints.
 
 ### Whole, positive integers as answers
 
-The first one that comes to mind is that the generated equations can't give rise to a solution with a - 
+The first one that comes to mind is that the generated equations can't give rise to a solution with a -
 
 * negative value; or
 * fraction as an answer.
