@@ -20,6 +20,20 @@ export async function handleRequest(request, env, ctx) {
 
   console.log(`[router] ${method} ${pathname}`);
 
+  // --- CSRF protection: validate Origin on mutating requests ---
+  // Browsers always send the Origin header on cross-origin requests.
+  // If present and not in our allowlist, reject the request.
+  if (method !== 'GET' && method !== 'OPTIONS') {
+    const origin = request.headers.get('Origin');
+    if (origin) {
+      const allowed = [env.WEBAUTHN_ORIGIN, 'http://localhost:5173'].filter(Boolean);
+      if (!allowed.includes(origin)) {
+        console.log(`[router] ${method} ${pathname} -> 403 (origin ${origin} not allowed)`);
+        return jsonResponse({ error: 'Forbidden' }, 403);
+      }
+    }
+  }
+
   // --- Public auth routes ---
   if (method === 'POST' && pathname === '/api/auth/register/challenge') {
     return handleRegisterChallenge(request, env);

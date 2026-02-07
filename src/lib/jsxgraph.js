@@ -1,162 +1,153 @@
 /**
- * JSXGraph code block activation with sandboxed execution.
+ * JSXGraph code block activation with iframe-sandboxed execution.
  *
  * Finds fenced code blocks marked as `language-jsxgraph` in rendered
- * Markdown and replaces them with live, interactive JSXGraph boards.
+ * Markdown and replaces them with live, interactive JSXGraph boards
+ * running inside sandboxed iframes.
  *
- * SECURITY: Although JSXGraph code comes from Claude API responses
- * (not direct user input), prompt injection could theoretically
- * manipulate Claude into emitting malicious code. The sandbox
- * mitigates this by:
+ * SECURITY: AI-generated JSXGraph code executes inside an iframe with
+ * sandbox="allow-scripts" (no allow-same-origin). This gives the
+ * iframe a unique opaque origin, so it cannot:
+ *   - Access the parent page's DOM, cookies, or localStorage
+ *   - Make same-origin requests to the app's API
+ *   - Escape to the parent window in any way
  *
- *   1. Validating the code against a blocklist of dangerous patterns
- *      (fetch, XMLHttpRequest, eval, document.cookie, import, etc.)
- *   2. Executing in a scope where dangerous globals are shadowed
- *      with undefined — the function only has access to `boardId`,
- *      `JXG`, and `Math`
- *   3. Limiting code length to prevent overly complex payloads
- *
- * This is defense-in-depth: the system prompt also instructs Claude
- * to only emit JSXGraph geometry code, but we don't rely on that alone.
+ * This is a true browser-enforced security boundary — no blocklist
+ * or scope-shadowing tricks needed.
  */
 
 // Counter for generating unique board container IDs
 let boardCounter = 0;
 
-// Maximum allowed length for JSXGraph code blocks
-const MAX_CODE_LENGTH = 5000;
+// Default board dimensions (matches .jsxgraph-container CSS)
+const BOARD_WIDTH = 400;
+const BOARD_HEIGHT = 400;
 
 /**
- * Patterns that should never appear in legitimate JSXGraph geometry code.
- * Each entry has a regex and a human-readable label for error messages.
- */
-const BLOCKED_PATTERNS = [
-  // Network access
-  { pattern: /\bfetch\s*\(/, label: 'fetch()' },
-  { pattern: /\bXMLHttpRequest\b/, label: 'XMLHttpRequest' },
-  { pattern: /\bWebSocket\b/, label: 'WebSocket' },
-  { pattern: /\bnavigator\b/, label: 'navigator' },
-  { pattern: /\bBeacon\b/, label: 'Beacon' },
-
-  // Dynamic code execution
-  { pattern: /\beval\s*\(/, label: 'eval()' },
-  { pattern: /\bFunction\s*\(/, label: 'Function()' },
-  { pattern: /\bsetTimeout\s*\(/, label: 'setTimeout()' },
-  { pattern: /\bsetInterval\s*\(/, label: 'setInterval()' },
-
-  // DOM / document access
-  { pattern: /\bdocument\b/, label: 'document' },
-  { pattern: /\bwindow\b/, label: 'window' },
-  { pattern: /\bglobalThis\b/, label: 'globalThis' },
-  { pattern: /\bself\b/, label: 'self' },
-  { pattern: /\bparent\b/, label: 'parent' },
-  { pattern: /\btop\b/, label: 'top' },
-  { pattern: /\bframes\b/, label: 'frames' },
-
-  // Storage / cookies
-  { pattern: /\bcookie\b/, label: 'cookie' },
-  { pattern: /\blocalStorage\b/, label: 'localStorage' },
-  { pattern: /\bsessionStorage\b/, label: 'sessionStorage' },
-  { pattern: /\bindexedDB\b/, label: 'indexedDB' },
-
-  // Module loading
-  { pattern: /\bimport\s*\(/, label: 'import()' },
-  { pattern: /\brequire\s*\(/, label: 'require()' },
-
-  // Prototype pollution
-  { pattern: /__proto__/, label: '__proto__' },
-  { pattern: /\bconstructor\s*\[/, label: 'constructor[]' },
-  { pattern: /\bprototype\b/, label: 'prototype' },
-];
-
-/**
- * Validate JSXGraph code against the blocklist.
- * Returns null if safe, or an error message string if blocked.
+ * Build the self-contained HTML document that runs inside the sandbox iframe.
  *
- * @param {string} code - The JSXGraph code to validate
- * @returns {string|null} Error message or null if valid
+ * The iframe loads JSXGraph from CDN, then listens for a postMessage
+ * containing the code to execute. After execution, it posts back
+ * either a resize event (with the board's rendered height) or an
+ * error message.
+ *
+ * NOTE: The dynamic code execution in this template is intentionally
+ * placed inside a sandboxed iframe (sandbox="allow-scripts", no
+ * allow-same-origin). The iframe runs in an opaque origin with no
+ * access to the parent page's DOM, cookies, storage, or network
+ * context. This is the security boundary itself.
+ *
+ * @returns {string} Complete HTML document as a string
  */
-function validateCode(code) {
-  if (code.length > MAX_CODE_LENGTH) {
-    return `Code block too long (${code.length} chars, max ${MAX_CODE_LENGTH})`;
+function buildSandboxHTML() {
+  return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraph.css"
+      integrity="sha384-RMSPB2Be9wH/n5AI3PnFHmhJqFC+SgENIO12LT5G44DKGFC9QQwrHDw8c0Yso+2e"
+      crossorigin="anonymous">
+<style>
+  html, body { margin: 0; padding: 0; overflow: hidden; }
+  #board { width: ${BOARD_WIDTH}px; height: ${BOARD_HEIGHT}px; }
+  .error { padding: 10px; color: #dc3545; font-style: italic; font-family: sans-serif; }
+</style>
+</head>
+<body>
+<div id="board"></div>
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraphcore.js"
+        integrity="sha384-bnP6bjDf7JdwCa3dyHVQwAJzu+cmbZTukREdxWSaWy8QpBTr3/kmkf2C/5XfPAQA"
+        crossorigin="anonymous"><\/script>
+<script>
+window.addEventListener('message', function(event) {
+  if (!event.data || !event.data.code) return;
+  try {
+    // Dynamic execution is safe here: this runs inside a sandboxed
+    // iframe with an opaque origin (no access to parent page)
+    var fn = (0, Function)('boardId', 'JXG', 'Math', event.data.code);
+    fn('board', JXG, Math);
+    parent.postMessage({
+      type: 'resize',
+      id: event.data.id,
+      height: document.body.scrollHeight
+    }, '*');
+  } catch (err) {
+    // Show error inside the sandboxed iframe (safe — opaque origin)
+    var el = document.getElementById('board');
+    el.textContent = 'Diagram error: ' + err.message;
+    el.className = 'error';
+    parent.postMessage({
+      type: 'error',
+      id: event.data.id,
+      message: err.message
+    }, '*');
   }
-
-  for (const { pattern, label } of BLOCKED_PATTERNS) {
-    if (pattern.test(code)) {
-      return `Blocked pattern detected: ${label}`;
-    }
-  }
-
-  return null;
+});
+<\/script>
+</body>
+</html>`;
 }
 
 /**
  * Find all jsxgraph code blocks in a DOM element and replace them
- * with live interactive JSXGraph boards.
+ * with live interactive JSXGraph boards running in sandboxed iframes.
  *
  * Marked renders fenced code blocks as <pre><code class="language-jsxgraph">.
- * This function finds those elements, validates and executes the code
- * in a sandboxed scope with dangerous globals shadowed.
+ * This function finds those elements, creates a sandbox iframe for each,
+ * and sends the code to execute via postMessage.
  *
  * @param {HTMLElement} element - The DOM element containing rendered message HTML
  */
 export function activateJsxGraphBlocks(element) {
-  // JXG is loaded as a global script in index.html
-  const JXG = window.JXG;
-  if (!JXG) return;
-
   const codeBlocks = element.querySelectorAll('code.language-jsxgraph');
 
   for (const codeEl of codeBlocks) {
     const pre = codeEl.parentElement; // The <pre> wrapper
     const jsxCode = codeEl.textContent;
 
-    // Create a container div for the board
+    // Create a container div for the iframe
     const boardId = `jsxgraph-board-${boardCounter++}`;
     const container = document.createElement('div');
     container.id = boardId;
     container.className = 'jsxgraph-container';
 
-    // Replace the <pre> block with the board container
+    // Replace the <pre> block with the container
     pre.parentNode.replaceChild(container, pre);
 
-    // Step 1: Validate code against blocklist
-    const blockReason = validateCode(jsxCode);
-    if (blockReason) {
-      container.textContent = `Diagram blocked: ${blockReason}`;
-      container.className = 'jsxgraph-error';
-      console.warn('JSXGraph code blocked:', blockReason);
-      continue;
-    }
+    // Build the sandbox iframe from a blob URL
+    const sandboxHTML = buildSandboxHTML();
+    const blob = new Blob([sandboxHTML], { type: 'text/html' });
+    const blobURL = URL.createObjectURL(blob);
 
-    // Step 2: Execute in a sandboxed scope.
-    // The function parameters shadow dangerous globals with undefined,
-    // so even if code references `window` or `document` it gets nothing.
-    // Only boardId, JXG, and Math are provided as usable values.
-    try {
-      // eslint-disable-next-line no-new-func
-      const fn = new Function(
-        'boardId', 'JXG', 'Math',
-        // Shadow dangerous globals by declaring them as parameters set to undefined
-        'window', 'document', 'globalThis', 'self', 'top', 'parent', 'frames',
-        'fetch', 'XMLHttpRequest', 'WebSocket', 'navigator',
-        'eval', 'Function', 'setTimeout', 'setInterval',
-        'localStorage', 'sessionStorage', 'indexedDB',
-        'importScripts', 'postMessage',
-        jsxCode
-      );
-      fn(
-        boardId, JXG, Math,
-        // All shadowed globals receive undefined
-        undefined, undefined, undefined, undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined,
-        undefined, undefined
-      );
-    } catch (e) {
-      container.textContent = `Diagram error: ${e.message}`;
-      container.className = 'jsxgraph-error';
-    }
+    const iframe = document.createElement('iframe');
+    // sandbox="allow-scripts" without allow-same-origin: the iframe gets
+    // a unique opaque origin and cannot access the parent's DOM/cookies/APIs
+    iframe.sandbox = 'allow-scripts';
+    iframe.src = blobURL;
+    iframe.style.width = `${BOARD_WIDTH}px`;
+    iframe.style.height = `${BOARD_HEIGHT}px`;
+    iframe.style.border = 'none';
+    iframe.style.display = 'block';
+
+    // Listen for messages from this iframe (resize or error)
+    const messageHandler = (event) => {
+      if (!event.data || event.data.id !== boardId) return;
+
+      if (event.data.type === 'resize') {
+        // Adjust iframe height to match rendered content
+        iframe.style.height = `${event.data.height}px`;
+      }
+      // Error display is handled inside the iframe itself
+    };
+    window.addEventListener('message', messageHandler);
+
+    // Once the iframe loads, send the JSXGraph code to execute
+    iframe.addEventListener('load', () => {
+      iframe.contentWindow.postMessage({ code: jsxCode, id: boardId }, '*');
+      // Clean up the blob URL after the iframe has loaded
+      URL.revokeObjectURL(blobURL);
+    });
+
+    container.appendChild(iframe);
   }
 }

@@ -78,18 +78,18 @@ export async function handleRegisterVerify(request, env) {
   console.log(`[auth] User created: id=${user.id} username="${username}"`);
 
   // Store the credential — public key as base64url string for portability.
-  // v10 shape: registrationInfo.credentialID, registrationInfo.credentialPublicKey
-  // (v11+ nests these under registrationInfo.credential)
-  const pubKeyBase64 = uint8ArrayToBase64URL(registrationInfo.credentialPublicKey);
+  // v13 nests credential data under registrationInfo.credential
+  const { credential: cred } = registrationInfo;
+  const pubKeyBase64 = uint8ArrayToBase64URL(cred.publicKey);
   await saveCredential(
     env.DB,
     user.id,
-    registrationInfo.credentialID,
+    cred.id,
     pubKeyBase64,
-    registrationInfo.counter,
-    registrationInfo.credentialType === 'public-key' ? ['internal'] : undefined
+    cred.counter,
+    cred.transports || ['internal']
   );
-  console.log(`[auth] Credential stored for user=${user.id} credentialID=${registrationInfo.credentialID}`);
+  console.log(`[auth] Credential stored for user=${user.id} credentialID=${cred.id}`);
 
   // Create session and return user info
   const session = await createSession(env, user.id, user.username);
@@ -122,13 +122,13 @@ export async function handleLoginChallenge(request, env) {
   const user = await getUserByUsername(env.DB, username.trim());
   if (!user) {
     console.log(`[auth] Login challenge rejected: user "${username}" not found`);
-    return jsonResponse({ error: 'User not found' }, 404);
+    return jsonResponse({ error: 'Invalid username or passkey' }, 400);
   }
 
   const credentials = await getCredentialsByUserId(env.DB, user.id);
   if (credentials.length === 0) {
     console.log(`[auth] Login challenge rejected: no passkeys for user=${user.id}`);
-    return jsonResponse({ error: 'No passkeys registered for this user' }, 400);
+    return jsonResponse({ error: 'Invalid username or passkey' }, 400);
   }
 
   const { options, challengeId } = await generateAuthOptions(env, credentials);

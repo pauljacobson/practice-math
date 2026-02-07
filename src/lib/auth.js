@@ -32,9 +32,8 @@ export async function registerPasskey(username) {
   console.log(`[auth] Registration challenge received: challengeId=${challengeId}`);
 
   // Step 2: Create credential via browser WebAuthn API
-  // v10 API takes options directly (v11+ uses { optionsJSON: options })
   console.log('[auth] Prompting browser for passkey creation...');
-  const attestation = await startRegistration(options);
+  const attestation = await startRegistration({ optionsJSON: options });
   console.log('[auth] Passkey created, verifying with server...');
 
   // Step 3: Send attestation to server for verification
@@ -63,9 +62,8 @@ export async function authenticatePasskey(username) {
   console.log(`[auth] Auth challenge received: challengeId=${challengeId} userId=${userId}`);
 
   // Step 2: Authenticate via browser WebAuthn API
-  // v10 API takes options directly (v11+ uses { optionsJSON: options })
   console.log('[auth] Prompting browser for passkey assertion...');
-  const assertion = await startAuthentication(options);
+  const assertion = await startAuthentication({ optionsJSON: options });
   console.log('[auth] Passkey asserted, verifying with server...');
 
   // Step 3: Send assertion to server for verification

@@ -25,7 +25,9 @@ export async function createSession(env, userId, username) {
     expirationTtl: SESSION_TTL,
   });
 
-  const cookie = `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${SESSION_TTL}`;
+  // Set Secure flag in production (when origin is HTTPS)
+  const secure = env.WEBAUTHN_ORIGIN?.startsWith('https://') ? '; Secure' : '';
+  const cookie = `${SESSION_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Lax${secure}; Max-Age=${SESSION_TTL}`;
   return { token, cookie };
 }
 
@@ -53,7 +55,8 @@ export async function getSession(request, env) {
  */
 export async function destroySession(env, token) {
   await env.SESSIONS.delete(token);
-  return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
+  const secure = env.WEBAUTHN_ORIGIN?.startsWith('https://') ? '; Secure' : '';
+  return `${SESSION_COOKIE}=; Path=/; HttpOnly; SameSite=Lax${secure}; Max-Age=0`;
 }
 
 /**

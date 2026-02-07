@@ -141,16 +141,14 @@ export async function verifyAuthResponse(env, challengeId, response, credential)
 
   const { challenge } = JSON.parse(stored);
 
-  // v10 uses `authenticator` with { credentialID, credentialPublicKey, counter, transports }
-  // (v11+ uses `credential` with { id, publicKey, counter, transports })
   const verification = await verifyAuthenticationResponse({
     response,
     expectedChallenge: challenge,
     expectedOrigin: env.WEBAUTHN_ORIGIN,
     expectedRPID: env.WEBAUTHN_RP_ID,
-    authenticator: {
-      credentialID: credential.credential_id,
-      credentialPublicKey: base64URLToUint8Array(credential.public_key),
+    credential: {
+      id: credential.credential_id,
+      publicKey: base64URLToUint8Array(credential.public_key),
       counter: credential.counter,
       transports: credential.transports ? JSON.parse(credential.transports) : undefined,
     },
