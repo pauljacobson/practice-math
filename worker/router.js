@@ -62,6 +62,19 @@ export async function handleRequest(request, env, ctx) {
 
   console.log(`[router] Authenticated user=${session.username} (id=${session.userId})`);
 
+  // --- Strict CSRF for authenticated routes: require valid Origin ---
+  // All browser POST requests include Origin. Session cookies are only
+  // sent by browsers, so missing Origin on a cookie-authenticated route
+  // is suspicious — reject it.
+  if (method !== 'GET' && method !== 'OPTIONS') {
+    const origin = request.headers.get('Origin');
+    const allowed = [env.WEBAUTHN_ORIGIN, 'http://localhost:5173'].filter(Boolean);
+    if (!origin || !allowed.includes(origin)) {
+      console.log(`[router] ${method} ${pathname} -> 403 (origin ${origin || 'missing'} not allowed)`);
+      return jsonResponse({ error: 'Forbidden' }, 403);
+    }
+  }
+
   if (method === 'POST' && pathname === '/api/auth/logout') {
     return handleLogout(request, env, session);
   }

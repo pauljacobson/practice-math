@@ -33,7 +33,7 @@ export async function handleRegisterChallenge(request, env) {
   const existing = await getUserByUsername(env.DB, username.trim());
   if (existing) {
     console.log(`[auth] Register challenge rejected: username "${username}" already taken`);
-    return jsonResponse({ error: 'Username already taken' }, 409);
+    return jsonResponse({ error: 'Registration failed' }, 400);
   }
 
   const { options, challengeId } = await generateRegOptions(env, username.trim());

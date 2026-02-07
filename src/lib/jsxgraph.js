@@ -44,6 +44,8 @@ function buildSandboxHTML() {
 <html>
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'none'; img-src 'none'; font-src https://cdn.jsdelivr.net;">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraph.css"
       integrity="sha384-RMSPB2Be9wH/n5AI3PnFHmhJqFC+SgENIO12LT5G44DKGFC9QQwrHDw8c0Yso+2e"
       crossorigin="anonymous">
@@ -131,6 +133,8 @@ export function activateJsxGraphBlocks(element) {
 
     // Listen for messages from this iframe (resize or error)
     const messageHandler = (event) => {
+      // Verify the message came from this specific iframe, not a spoofed source
+      if (event.source !== iframe.contentWindow) return;
       if (!event.data || event.data.id !== boardId) return;
 
       if (event.data.type === 'resize') {
