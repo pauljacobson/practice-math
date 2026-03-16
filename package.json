@@ -28,9 +28,9 @@
     "preact": "^10.25.0"
   },
   "devDependencies": {
-    "@preact/preset-vite": "^2.9.0",
-    "@simplewebauthn/server": "^13.2.2",
+    "@preact/preset-vite": "^2.10.4",
+    "@simplewebauthn/server": "^13.3.0",
     "vite": "^6.0.0",
-    "wrangler": "^4.63.0"
+    "wrangler": "^4.74.0"
   }
 }
