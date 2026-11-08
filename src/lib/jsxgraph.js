@@ -46,8 +46,8 @@ function buildSandboxHTML() {
 <meta charset="UTF-8">
 <meta http-equiv="Content-Security-Policy"
       content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'none'; img-src 'none'; font-src https://cdn.jsdelivr.net;">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraph.css"
-      integrity="sha384-RMSPB2Be9wH/n5AI3PnFHmhJqFC+SgENIO12LT5G44DKGFC9QQwrHDw8c0Yso+2e"
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jsxgraph@1.14.3/distrib/jsxgraph.css"
+      integrity="sha384-0WPp7YfQ2XP27W7nFBnVxJGg4M2CAA8ABwo8dLnqmjkWt5kMhTuzcWfc8LxW27wW"
       crossorigin="anonymous">
 <style>
   html, body { margin: 0; padding: 0; overflow: hidden; }
@@ -57,8 +57,8 @@ function buildSandboxHTML() {
 </head>
 <body>
 <div id="board"></div>
-<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.11.1/distrib/jsxgraphcore.js"
-        integrity="sha384-bnP6bjDf7JdwCa3dyHVQwAJzu+cmbZTukREdxWSaWy8QpBTr3/kmkf2C/5XfPAQA"
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph@1.14.3/distrib/jsxgraphcore.js"
+        integrity="sha384-/gRtLXAXiYXfed0Ajep7yLSyD64K0WQYnhZ2nAVPArQLm7X6VRHGWvhOSHgcUMBL"
         crossorigin="anonymous"><\/script>
 <script>
 window.addEventListener('message', function(event) {
