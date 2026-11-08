@@ -32,7 +32,7 @@ Students interact with a Claude-powered AI tutor that explains math concepts ste
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 22+
 - An [Anthropic API key](https://console.anthropic.com/)
 
 ### Setup
